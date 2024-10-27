@@ -1,5 +1,6 @@
 {
   "domain": "dawarich",
+  "version": "0.0.1",
   "name": "Dawarich",
   "codeowners": ["@albinlind"],
   "config_flow": true,
