@@ -1,3 +1,4 @@
 {
-	"name": "Dawarich"
+	"name": "Dawarich",
+	"domains": ["device_tracker"]
 }
