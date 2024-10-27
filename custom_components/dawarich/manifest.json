@@ -8,7 +8,7 @@
   "documentation": "https://www.home-assistant.io/integrations/dawarich",
   "homekit": {},
   "iot_class": "local_polling",
-  "requirements": ["dawarich-api==0.1.1"],
+  "requirements": ["dawarich-api==0.1.2"],
   "ssdp": [],
   "zeroconf": []
 }
