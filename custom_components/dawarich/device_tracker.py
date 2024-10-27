@@ -2,7 +2,6 @@
 
 from logging import getLogger
 import random
-import time
 
 from homeassistant.components.device_tracker.config_entry import TrackerEntity
 from homeassistant.config_entries import ConfigEntry
@@ -10,9 +9,8 @@ from homeassistant.core import Event, EventStateChangedData, HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.event import async_track_state_change_event
 from homeassistant.helpers.typing import ConfigType
+from dawarich_api import DawarichAPI
 
-from . import DOMAIN
-from .dawarich_api import DawarichAPI
 
 _LOGGER = getLogger(__name__)
 
@@ -33,7 +31,7 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up the sensor platform."""
-    async_add_entities([DawarichSensor(entry=config_entry.data, hass=hass)])
+    async_add_entities([DawarichSensor(entry=config_entry.data, hass=hass)]) # type: ignore
 
 
 class DawarichSensor(TrackerEntity):
@@ -51,9 +49,7 @@ class DawarichSensor(TrackerEntity):
         self._location_name = "Home"
         self._location_accuracy = 2
 
-        self._api = DawarichAPI(
-            url=self._url, api_key=self._api_key, name=self._friendly_name
-        )
+        self._api = DawarichAPI(url=self._url, api_key=self._api_key)
 
         self._hass = hass
         self._async_unsubscribe_state_changed = async_track_state_change_event(
@@ -61,6 +57,7 @@ class DawarichSensor(TrackerEntity):
             entity_ids=[self._mobile_app],
             action=self._get_state_change,
         )
+        _LOGGER.debug("Dawarich Sensor initialized")
 
     @property
     def name(self) -> str:
@@ -108,17 +105,16 @@ class DawarichSensor(TrackerEntity):
             )
             new_data = event.data["new_state"].attributes
             # We send the location to the Dawarich API
-            response = await self._api.async_post_data(
-                data={
-                    "latitude": new_data["latitude"],
-                    "longitude": new_data["longitude"],
-                }
+            response = await self._api.add_one_point(
+                latitude=new_data["latitude"],
+                longitude=new_data["longitude"],
+                name=self._friendly_name,
             )
             if response.success:
                 _LOGGER.debug("Location sent to Dawarich API")
             else:
                 _LOGGER.error(
-                    "Failed to send location to Dawarich API, %s with context %s",
-                    response.message,
-                    response.context,
+                    "Error sending location to Dawarich API response code %s and error: %s",
+                    response.response_code,
+                    response.error,
                 )
