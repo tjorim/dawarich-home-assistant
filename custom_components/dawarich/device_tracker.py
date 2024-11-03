@@ -1,16 +1,15 @@
 """Dawarich integration."""
 
-from logging import getLogger
 import random
+from logging import getLogger
 
+from dawarich_api import DawarichAPI
 from homeassistant.components.device_tracker.config_entry import TrackerEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import Event, EventStateChangedData, HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.event import async_track_state_change_event
 from homeassistant.helpers.typing import ConfigType
-from dawarich_api import DawarichAPI
-
 
 _LOGGER = getLogger(__name__)
 
@@ -22,7 +21,7 @@ async def async_setup_platform(
     discovery_info=None,
 ) -> None:
     """Set up the sensor platform."""
-    async_add_entities([DawarichSensor(entry=config, hass=hass)])
+    async_add_entities([DawarichDeviceTracker(entry=config, hass=hass)])
 
 
 async def async_setup_entry(
@@ -31,10 +30,10 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up the sensor platform."""
-    async_add_entities([DawarichSensor(entry=config_entry.data, hass=hass)]) # type: ignore
+    async_add_entities([DawarichDeviceTracker(entry=config_entry.data, hass=hass)])
 
 
-class DawarichSensor(TrackerEntity):
+class DawarichDeviceTracker(TrackerEntity):
     """Dawarich Sensor Class."""
 
     def __init__(self, entry: ConfigType, hass: HomeAssistant) -> None:

@@ -5,7 +5,7 @@ from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 
 DOMAIN = "dawarich"
-VERSION = "0.0.0"
+VERSION = "0.1.0"
 
 PLATFORMS: list[Platform] = [Platform.DEVICE_TRACKER]
 
