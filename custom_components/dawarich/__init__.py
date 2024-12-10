@@ -5,9 +5,9 @@ from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 
 DOMAIN = "dawarich"
-VERSION = "0.0.0"
+VERSION = "0.2.0"
 
-PLATFORMS: list[Platform] = [Platform.DEVICE_TRACKER]
+PLATFORMS: list[Platform] = [Platform.DEVICE_TRACKER, Platform.SENSOR]
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:

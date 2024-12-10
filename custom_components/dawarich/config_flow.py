@@ -3,7 +3,6 @@
 from typing import Any
 
 import voluptuous as vol
-
 from homeassistant import config_entries
 from homeassistant.helpers import selector
 
@@ -25,8 +24,8 @@ class DawarichConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             )
         data_schema = {
             vol.Required("friendly_name", default="Dawarich"): str,
-            vol.Required("mobile_app"): selector.EntitySelector(
-                selector.EntitySelectorConfig(domain=["mobile_app", "button"])
+            vol.Optional("mobile_app", msg="If you want to track your device"): selector.EntitySelector(
+                selector.EntitySelectorConfig(domain=["mobile_app"])
             ),
             vol.Required("url"): str,
             vol.Required("api_key"): str,

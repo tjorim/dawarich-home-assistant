@@ -1,16 +1,15 @@
 """Dawarich integration."""
 
-from logging import getLogger
 import random
+from logging import getLogger
 
+from dawarich_api import DawarichAPI
 from homeassistant.components.device_tracker.config_entry import TrackerEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import Event, EventStateChangedData, HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.event import async_track_state_change_event
 from homeassistant.helpers.typing import ConfigType
-from dawarich_api import DawarichAPI
-
 
 _LOGGER = getLogger(__name__)
 
@@ -22,7 +21,11 @@ async def async_setup_platform(
     discovery_info=None,
 ) -> None:
     """Set up the sensor platform."""
-    async_add_entities([DawarichSensor(entry=config, hass=hass)])
+    if not config.get("mobile_app"):
+        _LOGGER.info("No mobile_app entity found in platform setup, skipping Dawarich mobile tracking setup")
+        return
+    async_add_entities([DawarichDeviceTracker(entry=config, hass=hass)])
+
 
 
 async def async_setup_entry(
@@ -31,10 +34,13 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up the sensor platform."""
-    async_add_entities([DawarichSensor(entry=config_entry.data, hass=hass)]) # type: ignore
+    if not config_entry.data.get("mobile_app"):
+        _LOGGER.info("No mobile_app entity found, skipping Dawarich mobile tracking setup")
+        return
+    async_add_entities([DawarichDeviceTracker(entry=config_entry.data, hass=hass)])
 
 
-class DawarichSensor(TrackerEntity):
+class DawarichDeviceTracker(TrackerEntity):
     """Dawarich Sensor Class."""
 
     def __init__(self, entry: ConfigType, hass: HomeAssistant) -> None:
@@ -84,37 +90,25 @@ class DawarichSensor(TrackerEntity):
         """Return the location accuracy of the device."""
         return self._location_accuracy
 
-    @property
-    def unique_id(self) -> str:
-        """Return a unique ID."""
-        return self._api_key
-
     async def _get_state_change(
         self, event: Event[EventStateChangedData], *args, **kwargs
     ):
         """Handle the state change."""
-        if "test_button" in event.data["new_state"].attributes["friendly_name"]:
-            self._latitude = random.uniform(-90, 90)
-            self._longitude = random.uniform(-180, 180)
-            self._location_name = "Test"
-            self._location_accuracy = 1
-            self.async_write_ha_state()
+        _LOGGER.debug(
+            "State change detected for %s, updating Dawarich", self._mobile_app
+        )
+        new_data = event.data["new_state"].attributes
+        # We send the location to the Dawarich API
+        response = await self._api.add_one_point(
+            latitude=new_data["latitude"],
+            longitude=new_data["longitude"],
+            name=self._friendly_name,
+        )
+        if response.success:
+            _LOGGER.debug("Location sent to Dawarich API")
         else:
-            _LOGGER.debug(
-                "State change detected for %s, updating Dawarich", self._mobile_app
+            _LOGGER.error(
+                "Error sending location to Dawarich API response code %s and error: %s",
+                response.response_code,
+                response.error,
             )
-            new_data = event.data["new_state"].attributes
-            # We send the location to the Dawarich API
-            response = await self._api.add_one_point(
-                latitude=new_data["latitude"],
-                longitude=new_data["longitude"],
-                name=self._friendly_name,
-            )
-            if response.success:
-                _LOGGER.debug("Location sent to Dawarich API")
-            else:
-                _LOGGER.error(
-                    "Error sending location to Dawarich API response code %s and error: %s",
-                    response.response_code,
-                    response.error,
-                )
