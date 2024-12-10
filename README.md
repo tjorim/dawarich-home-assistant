@@ -23,7 +23,7 @@ Altough the below instructions might look complicated, they are rather simple.
 2. Navigate to HACS in your Home Assistant.
 3. Press the three buttons in the top right.
 4. Choose Custom Repository
-5. Paste the link to the repository `https://github.com/AlbinLind/dawarich-home-assistant`.
+5. Paste the link to the repository ```https://github.com/AlbinLind/dawarich-home-assistant```.
 6. Choose Type: `Integration`.
 7. Search for `Dawarich` and press install
 8. Restart Home Assistant
