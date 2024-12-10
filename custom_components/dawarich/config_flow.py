@@ -25,7 +25,7 @@ class DawarichConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         data_schema = {
             vol.Required("friendly_name", default="Dawarich"): str,
             vol.Optional("mobile_app", msg="If you want to track your device"): selector.EntitySelector(
-                selector.EntitySelectorConfig(integration="mobile_app")
+                selector.EntitySelectorConfig(domain="device_tracker")
             ),
             vol.Required("url"): str,
             vol.Required("api_key"): str,
