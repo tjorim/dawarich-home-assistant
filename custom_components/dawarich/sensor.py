@@ -2,20 +2,24 @@
 
 import logging
 from datetime import timedelta
+from typing import TYPE_CHECKING, Any
 
 from dawarich_api import DawarichAPI
 from dawarich_api.api_calls import StatsResponseModel
 from homeassistant.components.sensor import SensorEntity, SensorEntityDescription
 from homeassistant.const import UnitOfLength
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import StateType
 from homeassistant.helpers.update_coordinator import (
     CoordinatorEntity,
     DataUpdateCoordinator,
+    UpdateFailed,
 )
 
-from .config_flow import DawarichConfigFlow
+if TYPE_CHECKING:
+    from .config_flow import DawarichConfigFlow
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -41,7 +45,7 @@ UPDATE_INTERVAL = timedelta(seconds=20)
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    entry: DawarichConfigFlow,
+    entry: "DawarichConfigFlow",
     async_add_entities: AddEntitiesCallback,
 ):
     """Set up Dawarich sensor."""
@@ -67,12 +71,20 @@ class DawarichCoordinator(DataUpdateCoordinator):
         )
         self.api = api
 
-    async def _async_update_data(self) -> StatsResponseModel:
+    async def _async_update_data(self) -> dict[str, Any]:
         response = await self.api.get_stats()
-        return response.response.dict()
+        match response.response_code:
+            case 200:
+                return response.response.dict() # type: ignore
+            case 401:
+                _LOGGER.error("Invalid credentials when trying to fetch stats from Dawarich")
+                raise ConfigEntryAuthFailed("Invalid API key")
+            case _:
+                _LOGGER.error("Error fetching data from Dawarich (status %s) %s", response.response_code, response.error)
+                raise UpdateFailed from Warning(f"Error fetching data from Dawarich (status {response.response_code})")
 
 
-class DawarichSensor(CoordinatorEntity, SensorEntity):
+class DawarichSensor(CoordinatorEntity, SensorEntity): # type: ignore
     """Representation fo a Dawarich sensor."""
 
     def __init__(
@@ -93,11 +105,16 @@ class DawarichSensor(CoordinatorEntity, SensorEntity):
         self._attr_unique_id = api_key + "/" + description.key
 
     @property
-    def native_value(self) -> StateType:
+    def native_value(self) -> StateType: # type: ignore
         """Return the state of the device."""
+        if self.coordinator.data is None:
+            return None
         return self.coordinator.data[self.entity_description.key]
     
     @property
-    def name(self) -> str:
+    def name(self) -> str: # type: ignore
         """Return the name of the sensor."""
-        return f"{self._friendly_name} {self.entity_description.name.title()}"
+        if isinstance(self.entity_description.name, str):
+            return f"{self._friendly_name} {self.entity_description.name.title()}"
+        _LOGGER.error("Name is not a string for %s", self.entity_description.key)
+        return f"{self._friendly_name}"
