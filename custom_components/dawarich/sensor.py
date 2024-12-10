@@ -21,19 +21,19 @@ _LOGGER = logging.getLogger(__name__)
 
 SENSOR_TYPES = (
     SensorEntityDescription(
-        key="total_distance_km", native_unit_of_measurement=UnitOfLength.KILOMETERS
+        key="total_distance_km", native_unit_of_measurement=UnitOfLength.KILOMETERS, name="Total Distance"
     ),
     SensorEntityDescription(
-        key="total_points_tracked", native_unit_of_measurement="points"
+        key="total_points_tracked", native_unit_of_measurement="points", name="Total Points Tracked"
     ),
     SensorEntityDescription(
-        key="total_reverse_geocoded_points", native_unit_of_measurement="points"
+        key="total_reverse_geocoded_points", native_unit_of_measurement="points", name="Total Reverse Geocoded Points"
     ),
     SensorEntityDescription(
-        key="total_countries_visited", native_unit_of_measurement="countries"
+        key="total_countries_visited", native_unit_of_measurement="countries", name="Total Countries Visited"
     ),
     SensorEntityDescription(
-        key="total_cities_visited", native_unit_of_measurement="cities"
+        key="total_cities_visited", native_unit_of_measurement="cities", name="Total Cities Visited"
     ),
 )
 UPDATE_INTERVAL = timedelta(seconds=20)
@@ -96,3 +96,8 @@ class DawarichSensor(CoordinatorEntity, SensorEntity):
     def native_value(self) -> StateType:
         """Return the state of the device."""
         return self.coordinator.data[self.entity_description.key]
+    
+    @property
+    def name(self) -> str:
+        """Return the name of the sensor."""
+        return f"{self._friendly_name} {self.entity_description.name.title()}"

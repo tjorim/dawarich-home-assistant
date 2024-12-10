@@ -1,11 +1,11 @@
 {
   "domain": "dawarich",
-  "version": "0.0.1",
+  "version": "0.2.0-alpha",
   "name": "Dawarich",
   "codeowners": ["@albinlind"],
   "config_flow": true,
   "dependencies": [],
-  "documentation": "https://www.home-assistant.io/integrations/dawarich",
+  "documentation": "",
   "homekit": {},
   "iot_class": "local_polling",
   "requirements": ["dawarich-api==0.1.2"],
