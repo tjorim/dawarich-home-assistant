@@ -21,7 +21,11 @@ async def async_setup_platform(
     discovery_info=None,
 ) -> None:
     """Set up the sensor platform."""
+    if not config.get("mobile_app"):
+        _LOGGER.info("No mobile_app entity found in platform setup, skipping Dawarich mobile tracking setup")
+        return
     async_add_entities([DawarichDeviceTracker(entry=config, hass=hass)])
+
 
 
 async def async_setup_entry(
@@ -30,6 +34,9 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up the sensor platform."""
+    if not config_entry.data.get("mobile_app"):
+        _LOGGER.info("No mobile_app entity found, skipping Dawarich mobile tracking setup")
+        return
     async_add_entities([DawarichDeviceTracker(entry=config_entry.data, hass=hass)])
 
 
@@ -83,37 +90,25 @@ class DawarichDeviceTracker(TrackerEntity):
         """Return the location accuracy of the device."""
         return self._location_accuracy
 
-    @property
-    def unique_id(self) -> str:
-        """Return a unique ID."""
-        return self._api_key
-
     async def _get_state_change(
         self, event: Event[EventStateChangedData], *args, **kwargs
     ):
         """Handle the state change."""
-        if "test_button" in event.data["new_state"].attributes["friendly_name"]:
-            self._latitude = random.uniform(-90, 90)
-            self._longitude = random.uniform(-180, 180)
-            self._location_name = "Test"
-            self._location_accuracy = 1
-            self.async_write_ha_state()
+        _LOGGER.debug(
+            "State change detected for %s, updating Dawarich", self._mobile_app
+        )
+        new_data = event.data["new_state"].attributes
+        # We send the location to the Dawarich API
+        response = await self._api.add_one_point(
+            latitude=new_data["latitude"],
+            longitude=new_data["longitude"],
+            name=self._friendly_name,
+        )
+        if response.success:
+            _LOGGER.debug("Location sent to Dawarich API")
         else:
-            _LOGGER.debug(
-                "State change detected for %s, updating Dawarich", self._mobile_app
+            _LOGGER.error(
+                "Error sending location to Dawarich API response code %s and error: %s",
+                response.response_code,
+                response.error,
             )
-            new_data = event.data["new_state"].attributes
-            # We send the location to the Dawarich API
-            response = await self._api.add_one_point(
-                latitude=new_data["latitude"],
-                longitude=new_data["longitude"],
-                name=self._friendly_name,
-            )
-            if response.success:
-                _LOGGER.debug("Location sent to Dawarich API")
-            else:
-                _LOGGER.error(
-                    "Error sending location to Dawarich API response code %s and error: %s",
-                    response.response_code,
-                    response.error,
-                )
