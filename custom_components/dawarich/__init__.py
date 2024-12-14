@@ -80,7 +80,6 @@ async def async_migrate_entry(hass: HomeAssistant, entry: config_entries.ConfigE
         return False
 
     if entry.version == 1:
-        _LOGGER.error(f"{entry.data}")
         data = {}
         data[CONF_HOST] = (
             entry.data["url"]
