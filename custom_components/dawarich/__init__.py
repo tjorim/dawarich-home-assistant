@@ -1,32 +1,50 @@
 """The Dawarich integration."""
 
+from dataclasses import dataclass
+
 from dawarich_api import DawarichAPI
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import Platform
+from homeassistant.const import CONF_API_KEY, CONF_HOST, CONF_NAME, CONF_SSL, Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed
 
-from ..dawarich.sensor import DawarichCoordinator
+from .config_flow import DawarichConfigFlow
+from .const import DOMAIN
+from .coordinator import DawarichCoordinator
+from .helpers import get_api
 
-DOMAIN = "dawarich"
 VERSION = "0.2.1"
 
 PLATFORMS: list[Platform] = [Platform.DEVICE_TRACKER, Platform.SENSOR]
 
+type DawarichConfigEntry = ConfigEntry[DawarichConfigEntryData]
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+
+@dataclass
+class DawarichConfigEntryData:
+    """Runtime data definitions."""
+
+    api: DawarichAPI
+    coordinator: DawarichCoordinator
+
+
+async def async_setup_entry(hass: HomeAssistant, entry: DawarichConfigEntry) -> bool:
     """Set up Dawarich from a config entry."""
     hass.data.setdefault(DOMAIN, {})
     hass.data[DOMAIN][entry.entry_id] = entry.data
 
-    # Test and make sure the API key is valid 
-    api_key = entry.data["api_key"]
-    url = entry.data["url"]
-    api = DawarichAPI(url=url, api_key=api_key)
+    name = entry.data[CONF_NAME]
+    host = entry.data[CONF_HOST]
+    api_key = entry.data[CONF_API_KEY]
+    use_ssl = entry.data[CONF_SSL]
+
+    api = get_api(host, api_key, use_ssl)
+
     coordinator = DawarichCoordinator(hass, api)
     await coordinator.async_config_entry_first_refresh()
 
-    # Setup the platforms if the API key is valid
+    entry.runtime_data = DawarichConfigEntryData(api=api, coordinator=coordinator)
+
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
     return True
