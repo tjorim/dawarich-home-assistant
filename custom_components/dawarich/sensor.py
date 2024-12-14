@@ -1,78 +1,70 @@
 """Show statistical data from your Dawarich instance."""
 
 import logging
-from datetime import timedelta
+from typing import TYPE_CHECKING
 
-from dawarich_api import DawarichAPI
-from dawarich_api.api_calls import StatsResponseModel
 from homeassistant.components.sensor import SensorEntity, SensorEntityDescription
-from homeassistant.const import UnitOfLength
+from homeassistant.const import CONF_API_KEY, CONF_HOST, CONF_NAME, UnitOfLength
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import StateType
 from homeassistant.helpers.update_coordinator import (
     CoordinatorEntity,
-    DataUpdateCoordinator,
 )
 
-from .config_flow import DawarichConfigFlow
+from .coordinator import DawarichCoordinator
+
+if TYPE_CHECKING:
+    from .config_flow import DawarichConfigFlow
 
 _LOGGER = logging.getLogger(__name__)
 
 SENSOR_TYPES = (
     SensorEntityDescription(
-        key="total_distance_km", native_unit_of_measurement=UnitOfLength.KILOMETERS, name="Total Distance"
+        key="total_distance_km",
+        native_unit_of_measurement=UnitOfLength.KILOMETERS,
+        name="Total Distance",
     ),
     SensorEntityDescription(
-        key="total_points_tracked", native_unit_of_measurement="points", name="Total Points Tracked"
+        key="total_points_tracked",
+        native_unit_of_measurement="points",
+        name="Total Points Tracked",
     ),
     SensorEntityDescription(
-        key="total_reverse_geocoded_points", native_unit_of_measurement="points", name="Total Reverse Geocoded Points"
+        key="total_reverse_geocoded_points",
+        native_unit_of_measurement="points",
+        name="Total Reverse Geocoded Points",
     ),
     SensorEntityDescription(
-        key="total_countries_visited", native_unit_of_measurement="countries", name="Total Countries Visited"
+        key="total_countries_visited",
+        native_unit_of_measurement="countries",
+        name="Total Countries Visited",
     ),
     SensorEntityDescription(
-        key="total_cities_visited", native_unit_of_measurement="cities", name="Total Cities Visited"
+        key="total_cities_visited",
+        native_unit_of_measurement="cities",
+        name="Total Cities Visited",
     ),
 )
-UPDATE_INTERVAL = timedelta(seconds=20)
 
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    entry: DawarichConfigFlow,
+    entry: "DawarichConfigFlow",
     async_add_entities: AddEntitiesCallback,
 ):
     """Set up Dawarich sensor."""
-    api_key = entry.data["api_key"]
-    url = entry.data["url"]
-    api = DawarichAPI(url=url, api_key=api_key)
-    coordinator = DawarichCoordinator(hass, api)
-    await coordinator.async_config_entry_first_refresh()
+    url = entry.data[CONF_HOST]
+    api_key = entry.data[CONF_API_KEY]
+    name = entry.data[CONF_NAME]
+    coordinator = entry.runtime_data.coordinator
     sensors = [
-        DawarichSensor(url, api_key, entry.data["friendly_name"], desc, coordinator)
-        for desc in SENSOR_TYPES
+        DawarichSensor(url, api_key, name, desc, coordinator) for desc in SENSOR_TYPES
     ]
     async_add_entities(sensors)
 
 
-class DawarichCoordinator(DataUpdateCoordinator):
-    """Custom coordinator."""
-
-    def __init__(self, hass: HomeAssistant, api: DawarichAPI):
-        """Initialize coordinator."""
-        super().__init__(
-            hass, _LOGGER, name="Dawarich Sensor", update_interval=UPDATE_INTERVAL
-        )
-        self.api = api
-
-    async def _async_update_data(self) -> StatsResponseModel:
-        response = await self.api.get_stats()
-        return response.response.dict()
-
-
-class DawarichSensor(CoordinatorEntity, SensorEntity):
+class DawarichSensor(CoordinatorEntity, SensorEntity):  # type: ignore
     """Representation fo a Dawarich sensor."""
 
     def __init__(
@@ -87,17 +79,21 @@ class DawarichSensor(CoordinatorEntity, SensorEntity):
         super().__init__(coordinator)
         self._api_key = api_key
         self._url = url
-        self._api = DawarichAPI(url=url, api_key=api_key)
         self._friendly_name = friendly_name
         self.entity_description = description
         self._attr_unique_id = api_key + "/" + description.key
 
     @property
-    def native_value(self) -> StateType:
+    def native_value(self) -> StateType:  # type: ignore
         """Return the state of the device."""
+        if self.coordinator.data is None:
+            return None
         return self.coordinator.data[self.entity_description.key]
-    
+
     @property
-    def name(self) -> str:
+    def name(self) -> str:  # type: ignore
         """Return the name of the sensor."""
-        return f"{self._friendly_name} {self.entity_description.name.title()}"
+        if isinstance(self.entity_description.name, str):
+            return f"{self._friendly_name} {self.entity_description.name.title()}"
+        _LOGGER.error("Name is not a string for %s", self.entity_description.key)
+        return f"{self._friendly_name}"

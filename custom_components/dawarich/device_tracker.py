@@ -1,31 +1,18 @@
 """Dawarich integration."""
 
-import random
 from logging import getLogger
 
 from dawarich_api import DawarichAPI
 from homeassistant.components.device_tracker.config_entry import TrackerEntity
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import CONF_API_KEY, CONF_NAME
 from homeassistant.core import Event, EventStateChangedData, HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.event import async_track_state_change_event
-from homeassistant.helpers.typing import ConfigType
+
+from .const import CONF_DEVICE
 
 _LOGGER = getLogger(__name__)
-
-
-async def async_setup_platform(
-    hass: HomeAssistant,
-    config: ConfigType,
-    async_add_entities: AddEntitiesCallback,
-    discovery_info=None,
-) -> None:
-    """Set up the sensor platform."""
-    if not config.get("mobile_app"):
-        _LOGGER.info("No mobile_app entity found in platform setup, skipping Dawarich mobile tracking setup")
-        return
-    async_add_entities([DawarichDeviceTracker(entry=config, hass=hass)])
-
 
 
 async def async_setup_entry(
@@ -34,28 +21,42 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up the sensor platform."""
-    if not config_entry.data.get("mobile_app"):
-        _LOGGER.info("No mobile_app entity found, skipping Dawarich mobile tracking setup")
+    if not config_entry.data.get(CONF_DEVICE):
+        _LOGGER.warning(
+            "No mobile_app entity found, skipping Dawarich mobile tracking setup"
+        )
         return
-    async_add_entities([DawarichDeviceTracker(entry=config_entry.data, hass=hass)])
+    name = config_entry.data[CONF_NAME]
+    api_key = config_entry.data[CONF_API_KEY]
+    mobile_app = config_entry.data[CONF_DEVICE]
+    api = config_entry.runtime_data.api
+    async_add_entities(
+        [DawarichDeviceTracker(name, api_key, mobile_app, api, hass=hass)]
+    )
 
 
 class DawarichDeviceTracker(TrackerEntity):
     """Dawarich Sensor Class."""
 
-    def __init__(self, entry: ConfigType, hass: HomeAssistant) -> None:
+    def __init__(
+        self,
+        name: str,
+        api_key: str,
+        mobile_app: str,
+        api: DawarichAPI,
+        hass: HomeAssistant,
+    ) -> None:
         """Initialize the sensor."""
-        self._friendly_name = entry["friendly_name"]
-        self._url = entry["url"]
-        self._api_key = entry["api_key"]
-        self._mobile_app = entry["mobile_app"]
+        self._friendly_name = name
+        self._api_key = api_key
+        self._mobile_app = mobile_app
 
         self._latitude = 0.0
         self._longitude = 0.0
         self._location_name = "Home"
         self._location_accuracy = 2
 
-        self._api = DawarichAPI(url=self._url, api_key=self._api_key)
+        self._api = api
 
         self._hass = hass
         self._async_unsubscribe_state_changed = async_track_state_change_event(
@@ -97,7 +98,10 @@ class DawarichDeviceTracker(TrackerEntity):
         _LOGGER.debug(
             "State change detected for %s, updating Dawarich", self._mobile_app
         )
-        new_data = event.data["new_state"].attributes
+        if (new_state := event.data.get("new_state")) is None:
+            _LOGGER.error("No new state found for %s", self._mobile_app)
+            return
+        new_data = new_state.attributes
         # We send the location to the Dawarich API
         response = await self._api.add_one_point(
             latitude=new_data["latitude"],
