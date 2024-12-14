@@ -85,7 +85,7 @@ class DawarichSensor(CoordinatorEntity, SensorEntity):  # type: ignore
         self._url = url
         self._friendly_name = friendly_name
         self.entity_description = description
-        self._attr_unique_id = api_key + description.key
+        self._attr_unique_id = api_key + "/" + description.key
 
     @property
     def native_value(self) -> StateType:  # type: ignore
