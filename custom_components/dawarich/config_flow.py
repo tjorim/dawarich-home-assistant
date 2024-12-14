@@ -50,6 +50,7 @@ class DawarichConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 CONF_NAME: user_input[CONF_NAME],
                 CONF_SSL: user_input[CONF_SSL],
                 CONF_VERIFY_SSL: user_input[CONF_VERIFY_SSL],
+                CONF_DEVICE: user_input.get(CONF_DEVICE),
             }
 
             self._async_abort_entries_match(
