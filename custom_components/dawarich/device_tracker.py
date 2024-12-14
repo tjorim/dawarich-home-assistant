@@ -2,7 +2,6 @@
 
 from logging import getLogger
 
-from dawarich_api import DawarichAPI
 from homeassistant.components.device_tracker.config_entry import TrackerEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_API_KEY, CONF_HOST, CONF_NAME

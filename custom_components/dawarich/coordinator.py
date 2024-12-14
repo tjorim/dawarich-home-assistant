@@ -1,4 +1,5 @@
 """Custom coordinator for Dawarich integration."""
+
 import logging
 from typing import Any
 

@@ -1,11 +1,8 @@
 """Show statistical data from your Dawarich instance."""
 
 import logging
-from datetime import timedelta
 from typing import TYPE_CHECKING
 
-from dawarich_api import DawarichAPI
-from dawarich_api.api_calls import StatsResponseModel
 from homeassistant.components.sensor import SensorEntity, SensorEntityDescription
 from homeassistant.const import CONF_API_KEY, CONF_HOST, CONF_NAME, UnitOfLength
 from homeassistant.core import HomeAssistant
@@ -62,8 +59,7 @@ async def async_setup_entry(
     name = entry.data[CONF_NAME]
     coordinator = entry.runtime_data.coordinator
     sensors = [
-        DawarichSensor(url, api_key, name, desc, coordinator)
-        for desc in SENSOR_TYPES
+        DawarichSensor(url, api_key, name, desc, coordinator) for desc in SENSOR_TYPES
     ]
     async_add_entities(sensors)
 

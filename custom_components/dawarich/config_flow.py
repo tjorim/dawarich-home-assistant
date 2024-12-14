@@ -4,7 +4,6 @@ import logging
 from typing import Any, Mapping
 
 import voluptuous as vol
-from dawarich_api import DawarichAPI
 from homeassistant import config_entries
 from homeassistant.const import (
     CONF_API_KEY,
@@ -33,7 +32,6 @@ class DawarichConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle a config flow for Dawarich."""
 
     VERSION = 2
-
 
     def __init__(self):
         """Initialize Dawarich config flow."""

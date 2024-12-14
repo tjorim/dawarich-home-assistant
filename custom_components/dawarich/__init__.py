@@ -15,9 +15,7 @@ from homeassistant.const import (
     Platform,
 )
 from homeassistant.core import HomeAssistant
-from homeassistant.exceptions import ConfigEntryAuthFailed
 
-from .config_flow import DawarichConfigFlow
 from .const import CONF_DEVICE, DOMAIN
 from .coordinator import DawarichCoordinator
 from .helpers import get_api
@@ -44,7 +42,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: DawarichConfigEntry) -> 
     hass.data.setdefault(DOMAIN, {})
     hass.data[DOMAIN][entry.entry_id] = entry.data
 
-    name = entry.data[CONF_NAME]
     host = entry.data[CONF_HOST]
     api_key = entry.data[CONF_API_KEY]
     use_ssl = entry.data[CONF_SSL]
