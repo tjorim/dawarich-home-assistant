@@ -34,6 +34,33 @@ class DawarichConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     VERSION = 2
 
+    # Migration from 1 to 2
+    async def async_migrate_entry(self, entry: config_entries.ConfigEntry):
+        """Migrate an old entry."""
+        if entry.version > 1:
+            # Downgrade not supported
+            return False
+
+        if entry.version == 1:
+            data = {}
+            data[CONF_HOST] = (
+                entry.data["url"].removeprefix("https://").removeprefix("http://").split(":")[0]
+            )
+            data[CONF_PORT] = (
+                entry.data["url"].removeprefix("https://").removeprefix("http://").split(":")[1]
+            )
+            data[CONF_SSL] = entry.data["url"].startswith("https")
+            data[CONF_API_KEY] = entry.data["api_key"]
+            data[CONF_NAME] = entry.data["friendly_name"]
+            data[CONF_VERIFY_SSL] = False
+
+            self.hass.config_entries.async_update_entry(entry, data=data, version=1)
+
+        _LOGGER.info(
+            "Migrated %s to config flow version %s", entry.entry_id, entry.version
+        )
+        return True
+
     def __init__(self):
         """Initialize Dawarich config flow."""
         self._config: dict = {}
