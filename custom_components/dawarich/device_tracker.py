@@ -98,7 +98,10 @@ class DawarichDeviceTracker(TrackerEntity):
         _LOGGER.debug(
             "State change detected for %s, updating Dawarich", self._mobile_app
         )
-        new_data = event.data["new_state"].attributes
+        if (new_state := event.data.get("new_state")) is None:
+            _LOGGER.error("No new state found for %s", self._mobile_app)
+            return
+        new_data = new_state.attributes
         # We send the location to the Dawarich API
         response = await self._api.add_one_point(
             latitude=new_data["latitude"],
