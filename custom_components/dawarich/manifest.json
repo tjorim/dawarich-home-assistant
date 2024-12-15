@@ -1,6 +1,6 @@
 {
   "domain": "dawarich",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "name": "Dawarich",
   "codeowners": ["@albinlind"],
   "config_flow": true,
@@ -8,7 +8,7 @@
   "documentation": "",
   "homekit": {},
   "iot_class": "local_polling",
-  "requirements": ["dawarich-api==0.1.3"],
+  "requirements": ["dawarich-api==0.1.4"],
   "ssdp": [],
   "zeroconf": []
 }
