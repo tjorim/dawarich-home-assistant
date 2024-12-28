@@ -7,10 +7,14 @@
     - [Manual Installation](#manual-installation)
 <!--toc:end-->
 
-> [!NOTE]
-> This is an experimental integration for Dawarich, expect possibly breaking changes. This is a community integration, not affiliated by Dawarich.
+> [!CAUTION]
+> Home Assistant version 2025.1 will change to pydantic v.2, I do not now yet how that will affect this integration, so be carefull when updgrading this integration (if you're staying on an older version of HA) and when upgrading you're HA instance. I will inform of any breaking changes in this integration.
 
-[Dawarich](https://dawarich.app/) is a self-hosted Google Timeline alternative.
+> [!NOTE]
+> This is an experimental integration for Dawarich, expect possibly breaking changes. This is a community integration, not affiliated with Dawarich.
+
+
+[Dawarich](https://dawarich.app/) is a self-hosted Google Timeline alternative ([see](https://support.google.com/maps/answer/14169818?hl=en&co=GENIE.Platform%3DAndroid) why you would want to consider it).
 
 This integration does two things, of which one is optional.
 1. It provides statistics for your account, this includes total distance in kilometers, number of cities visited etc.
