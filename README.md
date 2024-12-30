@@ -8,7 +8,7 @@
 <!--toc:end-->
 
 > [!CAUTION]
-> Home Assistant version 2025.1 will change to pydantic v.2, I do not now yet how that will affect this integration, so be carefull when updgrading this integration (if you're staying on an older version of HA) and when upgrading you're HA instance. I will inform of any breaking changes in this integration.
+> Home Assistant version 2025.1 will change to pydantic v2. If you decide to update HA you will have to update this integration to 0.3.2, which contains a patch for this. If you have any issues, please report them.
 
 > [!NOTE]
 > This is an experimental integration for Dawarich, expect possibly breaking changes. This is a community integration, not affiliated with Dawarich.
