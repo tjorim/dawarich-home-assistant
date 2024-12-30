@@ -20,7 +20,7 @@ from .const import CONF_DEVICE, DOMAIN
 from .coordinator import DawarichCoordinator
 from .helpers import get_api
 
-VERSION = "0.3.1"
+VERSION = "0.3.2"
 
 PLATFORMS: list[Platform] = [Platform.DEVICE_TRACKER, Platform.SENSOR]
 
