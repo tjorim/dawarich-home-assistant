@@ -25,20 +25,14 @@ There are two ways to install this. The easiest is with [HACS](https://hacs.xyz/
 
 ### Install with HACS
 
-<!-- #### HACS Installed and if this is added to HACS repository.
-[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=AlbinLind&repository=dawarich-home-assistant) -->
-
-<!-- #### HACS not Installed -->
 Altough the below instructions might look complicated, they are rather simple.
-1. Make sure you have HACS installed, ([instructions](https://hacs.xyz/docs/use/))
-2. Navigate to HACS in your Home Assistant.
-3. Press the three buttons in the top right.
-4. Choose Custom Repository
-5. Paste the link to the repository `https://github.com/AlbinLind/dawarich-home-assistant`.
-6. Choose Type: `Integration`.
-7. Search for `Dawarich` and press install
-8. Restart Home Assistant
-9. Navigate to `Settings -> Devices & services` and add a Dawarich instance.
+1. Make sure you have HACS installed using [these instructions](https://hacs.xyz/docs/use/).
+2. Click the button below to add the custom repository to HACS directly:\
+   [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=AlbinLind&repository=dawarich-home-assistant&category=integration)
+3. Press the download button in the bottom right corner.
+4. Restart Home Assistant.
+5. Click the button below to configure the Dawarich integration:\
+   [![Open your Home Assistant instance and start setting up a new integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=dawarich)
 
 ### Manual Installation
 Take the items under `custom_components/dawarich` and place them in the folder `homeassistant/custom_components/dawarich`.
