@@ -127,6 +127,9 @@ class DawarichDeviceTracker(TrackerEntity):
         if (vertical_accuracy := new_data.get("vertical_accuracy")) is not None:
             optional_params["vertical_accuracy"] = vertical_accuracy
             
+        if (battery := new_data.get("battery_level")) is not None:
+            optional_params["battery_level"] = battery
+            
         if (speed := new_data.get("speed")) is not None:
             optional_params["speed"] = speed
 
