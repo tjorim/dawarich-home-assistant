@@ -103,10 +103,20 @@ class DawarichDeviceTracker(TrackerEntity):
             return
         new_data = new_state.attributes
         # We send the location to the Dawarich API
+        speed = 0
+        if "speed" in new_data:
+            speed = new_data["speed"] if new_data["speed"] is not None else 0
+
+        altitude = 0
+        if "altitude" in new_data:
+            altitude = new_data["altitude"] if new_data["altitude"] is not None else 0
+
         response = await self._api.add_one_point(
             latitude=new_data["latitude"],
             longitude=new_data["longitude"],
             name=self._friendly_name,
+            altitude=altitude,
+            speed=speed,
         )
         if response.success:
             _LOGGER.debug("Location sent to Dawarich API")
