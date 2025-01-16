@@ -128,7 +128,8 @@ class DawarichDeviceTracker(TrackerEntity):
             optional_params["vertical_accuracy"] = vertical_accuracy
             
         if (speed := new_data.get("speed")) is not None:
-            optional_params["speed"] = speed
+            # Convert speed from m/s to km/h
+            optional_params["speed"] = round(speed * 3.6)
 
         # Send to Dawarich API
         response = await self._api.add_one_point(
