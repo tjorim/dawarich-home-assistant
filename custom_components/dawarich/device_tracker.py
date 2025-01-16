@@ -57,8 +57,8 @@ class DawarichDeviceTracker(TrackerEntity):
         self._location_accuracy = 2
 
         self._api = api
-
         self._hass = hass
+
         self._async_unsubscribe_state_changed = async_track_state_change_event(
             hass=self._hass,
             entity_ids=[self._mobile_app],
@@ -101,12 +101,41 @@ class DawarichDeviceTracker(TrackerEntity):
         if (new_state := event.data.get("new_state")) is None:
             _LOGGER.error("No new state found for %s", self._mobile_app)
             return
+        
+        # Log received data
         new_data = new_state.attributes
-        # We send the location to the Dawarich API
+        _LOGGER.debug("Received data: %s", new_data)
+        
+        # Get coordinates from new_data
+        latitude = new_data.get("latitude")
+        longitude = new_data.get("longitude")
+
+        # Check if the coordinates are present
+        if latitude is None or longitude is None:
+            _LOGGER.debug("Coordinates are not present, skipping update")
+            return
+
+        # Only include optional parameters if they have valid values
+        optional_params = {}
+
+        if (gps_accuracy := new_data.get("gps_accuracy")) is not None:
+            optional_params["horizontal_accuracy"] = gps_accuracy
+            
+        if (altitude := new_data.get("altitude")) is not None:
+            optional_params["altitude"] = altitude
+            
+        if (vertical_accuracy := new_data.get("vertical_accuracy")) is not None:
+            optional_params["vertical_accuracy"] = vertical_accuracy
+            
+        if (speed := new_data.get("speed")) is not None:
+            optional_params["speed"] = speed
+
+        # Send to Dawarich API
         response = await self._api.add_one_point(
-            latitude=new_data["latitude"],
-            longitude=new_data["longitude"],
             name=self._friendly_name,
+            latitude=latitude,
+            longitude=longitude,
+            **optional_params
         )
         if response.success:
             _LOGGER.debug("Location sent to Dawarich API")
