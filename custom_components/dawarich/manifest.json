@@ -1,14 +1,15 @@
 {
   "domain": "dawarich",
-  "version": "0.3.2",
   "name": "Dawarich",
   "codeowners": ["@albinlind"],
   "config_flow": true,
   "dependencies": [],
-  "documentation": "",
+  "documentation": "https://github.com/AlbinLind/dawarich-home-assistant",
   "homekit": {},
   "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/AlbinLind/dawarich-home-assistant/issues",
   "requirements": ["dawarich-api==0.2.0"],
   "ssdp": [],
+  "version": "0.4.0",
   "zeroconf": []
 }
