@@ -1,6 +1,5 @@
 {
   "domain": "dawarich",
-  "version": "0.4.0",
   "name": "Dawarich",
   "codeowners": ["@albinlind"],
   "config_flow": true,
@@ -11,5 +10,6 @@
   "issue_tracker": "https://github.com/AlbinLind/dawarich-home-assistant/issues",
   "requirements": ["dawarich-api==0.2.0"],
   "ssdp": [],
+  "version": "0.4.0",
   "zeroconf": []
 }
