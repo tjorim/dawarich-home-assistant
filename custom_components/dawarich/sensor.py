@@ -1,6 +1,5 @@
 """Show statistical data from your Dawarich instance."""
 
-from enum import Enum
 import logging
 from typing import TYPE_CHECKING
 
@@ -22,7 +21,7 @@ from homeassistant.helpers.update_coordinator import (
     CoordinatorEntity,
 )
 
-from .const import CONF_DEVICE, DOMAIN
+from .const import CONF_DEVICE, DOMAIN, DawarichTrackerStates
 from .coordinator import DawarichCoordinator
 
 if TYPE_CHECKING:
@@ -114,15 +113,6 @@ async def async_setup_entry(
         _LOGGER.info("No mobile device provided, skipping tracker sensor")
 
     async_add_entities(sensors)
-
-
-class DawarichTrackerStates(Enum):
-    """States of the Dawarich tracker sensor."""
-
-    UNKNOWN = "Unknown"
-    SUCCESS = "Success"
-    ERROR = "Error"
-
 
 class DawarichTrackerSensor(SensorEntity):
     """Sensor that updates and keep track of the updates to the Dawarich API."""
