@@ -83,7 +83,7 @@ async def async_setup_entry(
         identifiers={(DOMAIN, api_key)},
         name=name,
         manufacturer="Dawarich",
-        configuration_url=url,
+        configuration_url=entry.runtime_data.api.url,
     )
 
     sensors = [
