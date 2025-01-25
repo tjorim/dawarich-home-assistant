@@ -89,7 +89,7 @@ async def async_setup_entry(
         configuration_url=entry.runtime_data.api.url,
     )
 
-    sensors = [
+    sensors: list[DawarichTrackerSensor | DawarichStatisticsSensor] = [
         DawarichStatisticsSensor(url, api_key, name, desc, coordinator, device_info)
         for desc in SENSOR_TYPES
     ]
@@ -113,6 +113,7 @@ async def async_setup_entry(
         _LOGGER.info("No mobile device provided, skipping tracker sensor")
 
     async_add_entities(sensors)
+
 
 class DawarichTrackerSensor(SensorEntity):
     """Sensor that updates and keep track of the updates to the Dawarich API."""
@@ -145,7 +146,7 @@ class DawarichTrackerSensor(SensorEntity):
         self._attr_options = [state.value for state in DawarichTrackerStates]
 
     @property
-    def unique_id(self) -> str:
+    def unique_id(self) -> str:  # type: ignore[override]
         """Return a unique id for the sensor."""
         return f"{self._api_key}/tracker"
 
@@ -155,7 +156,7 @@ class DawarichTrackerSensor(SensorEntity):
         return self._state
 
     @property
-    def icon(self) -> str:
+    def icon(self) -> str:  # type: ignore[override]
         """Return the icon to use in the frontend."""
         return "mdi:map-marker-circle"
 
@@ -219,7 +220,7 @@ class DawarichTrackerSensor(SensorEntity):
             )
 
     @property
-    def name(self) -> str:  # type: ignore
+    def name(self) -> str:  # type: ignore[override]
         """Return the name of the sensor."""
         return self._device_name + " Tracker"
 
@@ -229,7 +230,7 @@ class DawarichTrackerSensor(SensorEntity):
         return TRACKER_SENSOR_TYPES.native_unit_of_measurement
 
 
-class DawarichStatisticsSensor(CoordinatorEntity, SensorEntity):  # type: ignore
+class DawarichStatisticsSensor(CoordinatorEntity, SensorEntity):  # type: ignore[incompatible-subclass]
     """Representation fo a Dawarich sensor."""
 
     def __init__(
@@ -252,21 +253,21 @@ class DawarichStatisticsSensor(CoordinatorEntity, SensorEntity):  # type: ignore
         self._attr_state_class = SensorStateClass.TOTAL
 
     @property
-    def native_value(self) -> StateType:  # type: ignore
+    def native_value(self) -> StateType:  # type: ignore[override]
         """Return the state of the device."""
         if self.coordinator.data is None:
             return None
         return self.coordinator.data[self.entity_description.key]
 
     @property
-    def icon(self) -> str: # type: ignore
+    def icon(self) -> str:  # type: ignore[override]
         """Return the icon to use in the frontend."""
         if self.entity_description.icon is not None:
             return self.entity_description.icon
         return "mdi:eye"
 
     @property
-    def name(self) -> str:  # type: ignore
+    def name(self) -> str:  # type: ignore[override]
         """Return the name of the sensor."""
         if isinstance(self.entity_description.name, str):
             return f"{self._device_name} {self.entity_description.name.title()}"
