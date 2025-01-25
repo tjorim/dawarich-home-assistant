@@ -1,11 +1,12 @@
 """Show statistical data from your Dawarich instance."""
 
+from enum import Enum
 import logging
 from typing import TYPE_CHECKING
 
 from dawarich_api import DawarichAPI
 from homeassistant.components.sensor import SensorEntity, SensorEntityDescription
-from homeassistant.components.sensor.const import SensorStateClass
+from homeassistant.components.sensor.const import SensorDeviceClass, SensorStateClass
 from homeassistant.const import (
     CONF_API_KEY,
     CONF_HOST,
@@ -35,6 +36,7 @@ SENSOR_TYPES = (
         native_unit_of_measurement=UnitOfLength.KILOMETERS,
         name="Total Distance",
         icon="mdi:map-marker-distance",
+        device_class=SensorDeviceClass.DISTANCE,
     ),
     SensorEntityDescription(
         key="total_points_tracked",
@@ -66,6 +68,7 @@ TRACKER_SENSOR_TYPES = SensorEntityDescription(
     key="last_update",
     name="Last Update",
     native_unit_of_measurement="",
+    device_class=SensorDeviceClass.ENUM,
 )
 
 
@@ -104,12 +107,21 @@ async def async_setup_entry(
                 api=api,
                 hass=hass,
                 device_info=device_info,
+                description=TRACKER_SENSOR_TYPES,
             )
         )
     else:
         _LOGGER.info("No mobile device provided, skipping tracker sensor")
 
     async_add_entities(sensors)
+
+
+class DawarichTrackerStates(Enum):
+    """States of the Dawarich tracker sensor."""
+
+    UNKNOWN = "Unknown"
+    SUCCESS = "Success"
+    ERROR = "Error"
 
 
 class DawarichTrackerSensor(SensorEntity):
@@ -123,6 +135,7 @@ class DawarichTrackerSensor(SensorEntity):
         api: DawarichAPI,
         hass: HomeAssistant,
         device_info: DeviceInfo,
+        description: SensorEntityDescription,
     ) -> None:
         """Initialize the sensor."""
         self._device_name = device_name
@@ -131,13 +144,15 @@ class DawarichTrackerSensor(SensorEntity):
         self._hass = hass
         self._api = api
         self._attr_device_info = device_info
+        self._attr_device_class = description.device_class
 
         self._async_unsubscribe_state_changed = async_track_state_change_event(
             hass=self._hass,
             entity_ids=[self._mobile_app],
             action=self._async_update_callback,
         )
-        self._state = "Idle"
+        self._state: DawarichTrackerStates = DawarichTrackerStates.UNKNOWN
+        self._attr_options = [state.value for state in DawarichTrackerStates]
 
     @property
     def unique_id(self) -> str:
@@ -204,9 +219,9 @@ class DawarichTrackerSensor(SensorEntity):
         )
         if response.success:
             _LOGGER.debug("Location sent to Dawarich API")
-            self._state = "Success"
+            self._state = DawarichTrackerStates.SUCCESS
         else:
-            self._state = "Error"
+            self._state = DawarichTrackerStates.ERROR
             _LOGGER.error(
                 "Error sending location to Dawarich API response code %s and error: %s",
                 response.response_code,
