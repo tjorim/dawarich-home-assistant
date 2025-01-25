@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 
 from dawarich_api import DawarichAPI
 from homeassistant.components.sensor import SensorEntity, SensorEntityDescription
+from homeassistant.components.sensor.const import SensorStateClass
 from homeassistant.const import (
     CONF_API_KEY,
     CONF_HOST,
@@ -243,6 +244,7 @@ class DawarichStatisticsSensor(CoordinatorEntity, SensorEntity):  # type: ignore
         self.entity_description = description
         self._attr_unique_id = api_key + "/" + description.key
         self._attr_device_info = device_info
+        self._attr_state_class = SensorStateClass.TOTAL
 
     @property
     def native_value(self) -> StateType:  # type: ignore
