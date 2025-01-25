@@ -195,7 +195,7 @@ class DawarichTrackerSensor(SensorEntity):
 
         if (speed := new_data.get("speed")) is not None:
             # Convert speed from m/s to km/h
-            optional_params["speed"] = round(speed * 3.6)
+            optional_params["speed"] = speed
 
         if (battery := new_data.get("battery")) is not None:
             optional_params["battery"] = battery
@@ -259,7 +259,7 @@ class DawarichStatisticsSensor(CoordinatorEntity, SensorEntity):  # type: ignore
         return self.coordinator.data[self.entity_description.key]
 
     @property
-    def icon(self) -> str:
+    def icon(self) -> str: # type: ignore
         """Return the icon to use in the frontend."""
         if self.entity_description.icon is not None:
             return self.entity_description.icon
