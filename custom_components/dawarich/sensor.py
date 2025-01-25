@@ -153,7 +153,7 @@ class DawarichTrackerSensor(SensorEntity):
     @property
     def state(self) -> StateType:
         """Return the state of the sensor."""
-        return self._state
+        return self._state.value
 
     @property
     def icon(self) -> str:  # type: ignore[override]
