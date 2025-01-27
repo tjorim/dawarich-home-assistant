@@ -6,10 +6,11 @@
         "title": "Dawarich",
         "description": "Please enter your Dawarich credentials",
         "data": {
-          "host": "[%key:common::config_flow::data::host%]",
-          "port": "[%key:common::config_flow::data::port%]",
-          "name": "[%key:common::config_flow::data::name%]",
+          "host": "Host",
+          "port": "Port",
+          "name": "Name",
           "mobile_app": "Device Tracker",
+          "ssl": "Use SSL (i.e. https)",
           "verify_ssl": "Verify SSL"
         }
       },
@@ -21,10 +22,10 @@
         }
       }
     },
-    "error": {
-      "connection_error": "Connection error, could not reach the Dawarich API.",
-      "invalid_api_key": "Invalid API key."
-    }
+  "error": {
+    "connection_error": "Connection error, could not reach the Dawarich API.",
+    "invalid_api_key": "Invalid API key."
+  }
   },
   "entity": {
     "sensor": {
