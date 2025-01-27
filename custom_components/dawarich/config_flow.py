@@ -182,4 +182,4 @@ class DawarichConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             case 401:
                 return {CONF_API_KEY: "invalid api key"}
             case _:
-                return {"base": "connection error"}
+                return {"base": "connection_error"}
