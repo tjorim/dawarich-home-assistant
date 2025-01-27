@@ -36,38 +36,39 @@ SENSOR_TYPES = (
         name="Total Distance",
         icon="mdi:map-marker-distance",
         device_class=SensorDeviceClass.DISTANCE,
+        translation_key="total_distance",
     ),
     SensorEntityDescription(
         key="total_points_tracked",
-        native_unit_of_measurement="points",
         name="Total Points Tracked",
         icon="mdi:map-marker-multiple",
+        translation_key="total_points_tracked",
     ),
     SensorEntityDescription(
         key="total_reverse_geocoded_points",
-        native_unit_of_measurement="points",
         name="Total Reverse Geocoded Points",
         icon="mdi:map-marker-question",
+        translation_key="total_reverse_geocoded_points",
     ),
     SensorEntityDescription(
         key="total_countries_visited",
-        native_unit_of_measurement="countries",
         name="Total Countries Visited",
         icon="mdi:earth",
+        translation_key="total_countries_visited",
     ),
     SensorEntityDescription(
         key="total_cities_visited",
-        native_unit_of_measurement="cities",
         name="Total Cities Visited",
         icon="mdi:city",
+        translation_key="total_cities_visited",
     ),
 )
 
 TRACKER_SENSOR_TYPES = SensorEntityDescription(
     key="last_update",
     name="Last Update",
-    native_unit_of_measurement="",
     device_class=SensorDeviceClass.ENUM,
+    translation_key="last_update",
 )
 
 
@@ -136,6 +137,7 @@ class DawarichTrackerSensor(SensorEntity):
         self._api = api
         self._attr_device_info = device_info
         self._attr_device_class = description.device_class
+        self.entity_description = description
 
         self._async_unsubscribe_state_changed = async_track_state_change_event(
             hass=self._hass,
@@ -222,11 +224,6 @@ class DawarichTrackerSensor(SensorEntity):
     def name(self) -> str:  # type: ignore[override]
         """Return the name of the sensor."""
         return self._device_name + " Tracker"
-
-    @property
-    def unit_of_measurement(self):
-        """Return the unit of measurement."""
-        return TRACKER_SENSOR_TYPES.native_unit_of_measurement
 
 
 class DawarichStatisticsSensor(CoordinatorEntity, SensorEntity):  # type: ignore[incompatible-subclass]
