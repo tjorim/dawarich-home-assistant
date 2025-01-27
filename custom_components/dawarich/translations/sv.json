@@ -51,9 +51,9 @@
       "last_update": {
         "name": "Senaste uppdatering",
         "state": {
-          "Unknown": "Okänd",
-          "Success": "Lyckades",
-          "Error": "Fel"
+          "unknown": "Okänd",
+          "success": "Lyckades",
+          "error": "Fel"
         }
       }
     }
