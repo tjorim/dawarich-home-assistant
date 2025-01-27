@@ -195,7 +195,6 @@ class DawarichTrackerSensor(SensorEntity):
             optional_params["vertical_accuracy"] = vertical_accuracy
 
         if (speed := new_data.get("speed")) is not None:
-            # Convert speed from m/s to km/h
             optional_params["speed"] = speed
 
         if (battery := new_data.get("battery")) is not None:
