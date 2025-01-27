@@ -22,10 +22,10 @@
         }
       }
     },
-  "error": {
-    "connection_error": "Connection error, could not reach the Dawarich API.",
-    "invalid_api_key": "Invalid API key."
-  }
+    "error": {
+      "connection_error": "Connection error, could not reach the Dawarich API.",
+      "invalid_api_key": "Invalid API key."
+    }
   },
   "entity": {
     "sensor": {
