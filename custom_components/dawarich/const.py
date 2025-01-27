@@ -17,6 +17,6 @@ UPDATE_INTERVAL = timedelta(seconds=60)
 class DawarichTrackerStates(Enum):
     """States of the Dawarich tracker sensor."""
 
-    UNKNOWN = "Unknown"
-    SUCCESS = "Success"
-    ERROR = "Error"
+    UNKNOWN = "unknown"
+    SUCCESS = "success"
+    ERROR = "error"
