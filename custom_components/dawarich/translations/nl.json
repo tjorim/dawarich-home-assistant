@@ -1,6 +1,5 @@
 {
   "config": {
-    "title": "Dawarich",
     "step": {
       "user": {
         "title": "Dawarich",
@@ -51,9 +50,9 @@
       "last_update": {
         "name": "Laatste Update",
         "state": {
-          "Unknown": "Onbekend",
-          "Success": "Succes",
-          "Error": "Fout"
+          "unknown": "Onbekend",
+          "success": "Succes",
+          "error": "Fout"
         }
       }
     }
