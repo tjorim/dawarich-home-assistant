@@ -3,36 +3,36 @@
     "step": {
       "user": {
         "title": "Dawarich",
-        "description": "Alstublieft voer uw Dawarich gegevens in",
+        "description": "Voer uw Dawarich gegevens in",
         "data": {
           "host": "Host",
-          "port": "Port",
-          "name": "Name",
+          "port": "Poort",
+          "name": "Naam",
           "mobile_app": "Apparaat Tracker",
-          "ssl": "Gebruiken SSL (d.w.z https)",
-          "verify_ssl": "Verifiëren SSL"
+          "ssl": "Gebruik SSL (HTTPS)",
+          "verify_ssl": "SSL-certificaat verifiëren"
         }
       },
       "api_key": {
         "title": "Dawarich",
-        "description": "Alstublieft voer uw Dawarich gegevens in",
+        "description": "Voer uw Dawarich gegevens in",
         "data": {
-          "api_key": "API Sleutel"
+          "api_key": "API-sleutel"
         }
       }
     },
     "error": {
       "connection_error": "Verbindingsfout, kon de Dawarich API niet bereiken.",
-      "invalid_api_key": "Ongeldige API sleutel."
+      "invalid_api_key": "Ongeldige API-sleutel."
     }
   },
   "entity": {
     "sensor": {
       "total_distance": {
-        "name": "Totaal Afstand"
+        "name": "Totale afstand"
       },
       "total_points_tracked": {
-        "name": "Totaal Punten Gevolgd",
+        "name": "Totaal aantal punten",
         "unit_of_measurement": "punten"
       },
       "total_reverse_geocoded_points": {
@@ -40,15 +40,15 @@
         "unit_of_measurement": "punten"
       },
       "total_countries_visied": {
-        "name": "Totaal Landen Bezocht",
+        "name": "Aantal bezochte landen",
         "unit_of_measurement": "landen"
       },
       "total_cities_visited": {
-        "name": "Totaal Steden Bezocht",
+        "name": "Aantal bezochte steden",
         "unit_of_measurement": "steden"
       },
       "last_update": {
-        "name": "Laatste Update",
+        "name": "Laatste update",
         "state": {
           "unknown": "Onbekend",
           "success": "Succes",
